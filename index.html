@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AskAExpert - Your Professional AI Companion</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0a0a;
@@ -17,6 +19,7 @@
             overflow-x: hidden;
             line-height: 1.6;
         }
+
         #three-container {
             position: fixed;
             top: 0;
@@ -25,6 +28,7 @@
             height: 100%;
             z-index: -1;
         }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -35,6 +39,7 @@
             z-index: 0;
             pointer-events: none;
         }
+
         .container {
             position: relative;
             z-index: 1;
@@ -42,6 +47,7 @@
             margin: 0 auto;
             padding: 0 20px;
         }
+
         header {
             padding: 20px 0;
             backdrop-filter: blur(20px);
@@ -53,11 +59,13 @@
             right: 0;
             z-index: 100;
         }
+
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .logo {
             font-size: 28px;
             font-weight: 800;
@@ -66,11 +74,13 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .nav-links {
             display: flex;
             gap: 30px;
             list-style: none;
         }
+
         .nav-links a {
             color: #ffffff;
             text-decoration: none;
@@ -78,9 +88,11 @@
             transition: all 0.3s ease;
             position: relative;
         }
+
         .nav-links a:hover {
             color: #667eea;
         }
+
         .nav-links a::after {
             content: '';
             position: absolute;
@@ -91,9 +103,11 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             transition: width 0.3s ease;
         }
+
         .nav-links a:hover::after {
             width: 100%;
         }
+
         .cta-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -106,14 +120,17 @@
             text-decoration: none;
             display: inline-block;
         }
+
         .cta-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
+
         .hero {
             padding: 180px 0 100px 0;
             text-align: center;
         }
+
         .hero h1 {
             font-size: 4rem;
             font-weight: 800;
@@ -124,18 +141,21 @@
             background-clip: text;
             animation: fadeInUp 1s ease-out;
         }
+
         .hero p {
             font-size: 1.4rem;
             margin-bottom: 40px;
             opacity: 0.9;
             animation: fadeInUp 1s ease-out 0.2s both;
         }
+
         .search-container {
             max-width: 600px;
             margin: 40px auto;
             position: relative;
             animation: fadeInUp 1s ease-out 0.4s both;
         }
+
         .search-box {
             width: 100%;
             padding: 20px 60px 20px 20px;
@@ -147,14 +167,17 @@
             backdrop-filter: blur(20px);
             transition: all 0.3s ease;
         }
+
         .search-box:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
         }
+
         .search-box::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
+
         .search-btn {
             position: absolute;
             right: 5px;
@@ -171,12 +194,15 @@
             justify-content: center;
             transition: all 0.3s ease;
         }
+
         .search-btn:hover {
             transform: translateY(-50%) scale(1.1);
         }
+
         .categories {
             padding: 80px 0;
         }
+
         .section-title {
             text-align: center;
             font-size: 2.5rem;
@@ -184,12 +210,14 @@
             margin-bottom: 50px;
             color: #ffffff;
         }
+
         .category-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             margin-bottom: 60px;
         }
+
         .category-card {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
@@ -200,11 +228,8 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
+
         .category-card::before {
             content: '';
             position: absolute;
@@ -215,43 +240,51 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
             transition: left 0.5s;
         }
+
         .category-card:hover::before {
             left: 100%;
         }
+
         .category-card:hover {
             transform: translateY(-10px);
             background: rgba(255, 255, 255, 0.12);
             box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
         }
+
         .category-icon {
             font-size: 3rem;
             margin-bottom: 20px;
             display: block;
         }
+
         .category-card h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
             color: #ffffff;
         }
+
         .category-card p {
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 20px;
-            text-align: center;
         }
+
         .expert-count {
             font-size: 0.9rem;
             color: #667eea;
             font-weight: 600;
         }
+
         .features {
             padding: 80px 0;
             background: rgba(255, 255, 255, 0.03);
         }
+
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 40px;
         }
+
         .feature-item {
             text-align: center;
             padding: 40px 20px;
@@ -259,9 +292,11 @@
             border-radius: 15px;
             transition: transform 0.3s ease;
         }
+
         .feature-item:hover {
             transform: translateY(-5px);
         }
+
         .feature-icon {
             font-size: 4rem;
             margin-bottom: 20px;
@@ -270,23 +305,28 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .feature-item h3 {
             font-size: 1.3rem;
             margin-bottom: 15px;
             color: #ffffff;
         }
+
         .feature-item p {
             color: rgba(255, 255, 255, 0.8);
         }
+
         .pricing {
             padding: 80px 0;
         }
+
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             margin-top: 50px;
         }
+
         .pricing-card {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
@@ -296,36 +336,44 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
+
         .pricing-card.featured {
             background: rgba(102, 126, 234, 0.1);
             border-color: #667eea;
             transform: scale(1.05);
         }
+
         .pricing-card:hover {
             transform: translateY(-10px);
         }
+
         .pricing-card.featured:hover {
             transform: translateY(-10px) scale(1.05);
         }
+
         .price {
             font-size: 3rem;
             font-weight: 800;
             color: #667eea;
             margin-bottom: 10px;
         }
+
         .price-subtitle {
             color: rgba(255, 255, 255, 0.7);
             margin-bottom: 30px;
         }
+
         .features-list {
             list-style: none;
             margin-bottom: 30px;
         }
+
         .features-list li {
             margin-bottom: 10px;
             padding-left: 20px;
             position: relative;
         }
+
         .features-list li::before {
             content: '✓';
             position: absolute;
@@ -333,6 +381,7 @@
             color: #667eea;
             font-weight: bold;
         }
+
         .chat-interface {
             position: fixed;
             bottom: 20px;
@@ -348,6 +397,7 @@
             z-index: 1000;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
+
         .chat-header {
             padding: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -357,11 +407,13 @@
             background: rgba(102, 126, 234, 0.1);
             border-radius: 20px 20px 0 0;
         }
+
         .chat-status {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .status-dot {
             width: 8px;
             height: 8px;
@@ -369,11 +421,13 @@
             background: #00ff00;
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+
         .chat-messages {
             flex: 1;
             padding: 20px;
@@ -382,12 +436,14 @@
             flex-direction: column;
             gap: 15px;
         }
+
         .chat-input {
             padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             gap: 10px;
         }
+
         .chat-input input {
             flex: 1;
             padding: 12px 16px;
@@ -397,10 +453,12 @@
             color: white;
             font-size: 14px;
         }
+
         .chat-input input:focus {
             outline: none;
             border-color: #667eea;
         }
+
         .message {
             padding: 12px 16px;
             border-radius: 18px;
@@ -408,6 +466,7 @@
             word-wrap: break-word;
             animation: messageSlide 0.3s ease-out;
         }
+
         @keyframes messageSlide {
             from {
                 opacity: 0;
@@ -418,16 +477,19 @@
                 transform: translateY(0);
             }
         }
+
         .message.user {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             align-self: flex-end;
             color: white;
         }
+
         .message.ai {
             background: rgba(255, 255, 255, 0.1);
             align-self: flex-start;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .message.typing {
             background: rgba(255, 255, 255, 0.1);
             align-self: flex-start;
@@ -435,10 +497,12 @@
             align-items: center;
             gap: 5px;
         }
+
         .typing-dots {
             display: flex;
             gap: 3px;
         }
+
         .typing-dots span {
             width: 6px;
             height: 6px;
@@ -446,8 +510,10 @@
             background: #667eea;
             animation: typing 1.4s infinite ease-in-out both;
         }
+
         .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
         .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
         @keyframes typing {
             0%, 80%, 100% { 
                 transform: scale(0.8);
@@ -458,6 +524,7 @@
                 opacity: 1;
             }
         }
+
         .chat-toggle {
             position: fixed;
             bottom: 30px;
@@ -477,10 +544,12 @@
             transition: all 0.3s ease;
             z-index: 1001;
         }
+
         .chat-toggle:hover {
             transform: scale(1.1);
             box-shadow: 0 20px 40px rgba(102, 126, 234, 0.6);
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -492,6 +561,7 @@
             z-index: 2000;
             backdrop-filter: blur(10px);
         }
+
         .modal-content {
             position: absolute;
             top: 50%;
@@ -505,6 +575,7 @@
             width: 90%;
             backdrop-filter: blur(20px);
         }
+
         .close {
             position: absolute;
             top: 15px;
@@ -514,12 +585,15 @@
             color: #ffffff;
             transition: color 0.3s ease;
         }
+
         .close:hover {
             color: #667eea;
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         .form-group input {
             width: 100%;
             padding: 15px;
@@ -530,13 +604,16 @@
             font-size: 16px;
             transition: border-color 0.3s ease;
         }
+
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
         }
+
         .form-group input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -547,13 +624,16 @@
                 transform: translateY(0);
             }
         }
+
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
+
         .floating {
             animation: float 6s ease-in-out infinite;
         }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -570,16 +650,20 @@
                 right: 50%;
                 transform: translateX(50%);
             }
+
             .category-grid {
                 grid-template-columns: 1fr;
             }
+
             .pricing-grid {
                 grid-template-columns: 1fr;
             }
+
             .pricing-card.featured {
                 transform: none;
             }
         }
+
         /* Loading states */
         .loading {
             display: inline-block;
@@ -590,6 +674,7 @@
             border-top-color: #667eea;
             animation: spin 1s ease-in-out infinite;
         }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -598,6 +683,7 @@
 <body>
     <div id="three-container"></div>
     <div class="overlay"></div>
+
     <header>
         <nav class="container">
             <div class="logo">AskAExpert</div>
@@ -613,6 +699,7 @@
             </div>
         </nav>
     </header>
+
     <section class="hero" id="home">
         <div class="container">
             <h1 class="floating">Expert Knowledge at Your Fingertips</h1>
@@ -628,6 +715,7 @@
             </div>
         </div>
     </section>
+
     <section class="categories" id="categories">
         <div class="container">
             <h2 class="section-title">Expert Categories</h2>
@@ -636,6 +724,7 @@
             </div>
         </div>
     </section>
+
     <section class="features" id="features">
         <div class="container">
             <h2 class="section-title">Why Choose AskAExpert?</h2>
@@ -673,6 +762,7 @@
             </div>
         </div>
     </section>
+
     <section class="pricing" id="pricing">
         <div class="container">
             <h2 class="section-title">Choose Your Plan</h2>
@@ -722,6 +812,7 @@
             </div>
         </div>
     </section>
+
     <!-- Chat Interface -->
     <div class="chat-interface" id="chatInterface">
         <div class="chat-header">
@@ -742,7 +833,9 @@
             <button class="cta-button" onclick="sendMessage()">Send</button>
         </div>
     </div>
+
     <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">💬</button>
+
     <!-- Modals -->
     <div class="modal" id="authModal">
         <div class="modal-content">
@@ -763,6 +856,7 @@
             </form>
         </div>
     </div>
+
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('loginModal')">&times;</span>
@@ -779,6 +873,7 @@
             </form>
         </div>
     </div>
+
     <div class="modal" id="expertModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('expertModal')">&times;</span>
@@ -795,7 +890,7 @@
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <script>
         // Expert categories data with enhanced information
         const categories = [
@@ -884,6 +979,7 @@
                 specialties: ['Auto Repair', 'Vehicle Inspection', 'Performance Tuning', 'Classic Cars']
             }
         ];
+
         // Enhanced AI responses based on categories
         const categoryResponses = {
             'Legal': [
@@ -911,66 +1007,64 @@
                 "According to industry standards and technical documentation..."
             ]
         };
+
         // Three.js Enhanced Background with Interactive Elements
-        let scene, camera, renderer, particles, mouseX = 0, mouseY = 0;
+        let scene, camera, renderer, particles;
+        let mouseX = 0, mouseY = 0;
+
         function initThreeJS() {
-            // Create scene
+            // Initialize scene
             scene = new THREE.Scene();
-            
-            // Create camera
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 30;
+            renderer = new THREE.WebGLRenderer({ 
+                alpha: true, 
+                antialias: true,
+                powerPreference: "high-performance"
+            });
             
-            // Create renderer
-            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x000000, 0);
             document.getElementById('three-container').appendChild(renderer.domElement);
-            
-            // Create particle system with more vibrant colors
-            const geometry = new THREE.BufferGeometry();
+
+            // Create enhanced particle system with more particles
             const particlesCount = 2000;
+            const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particlesCount * 3);
             const colors = new Float32Array(particlesCount * 3);
             const sizes = new Float32Array(particlesCount);
-            
-            // Define a more vibrant color palette
+
             const colorPalette = [
-                new THREE.Color(0x667eea), // Purple
-                new THREE.Color(0x764ba2), // Darker purple
-                new THREE.Color(0x00d4ff), // Cyan
-                new THREE.Color(0x00ff88), // Teal
-                new THREE.Color(0xff00ff), // Magenta
+                new THREE.Color(0x667eea), // Purple-blue
+                new THREE.Color(0x764ba2), // Purple
+                new THREE.Color(0x00d4ff), // Light blue
+                new THREE.Color(0x4facfe), // Blue
+                new THREE.Color(0x43e97b), // Green
+                new THREE.Color(0xfa709a)  // Pink
             ];
-            
+
             for (let i = 0; i < particlesCount; i++) {
                 const i3 = i * 3;
                 
-                // Position - create a more interesting distribution
-                const radius = 15 + Math.random() * 30;
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI;
+                // Position - spread out more
+                positions[i3] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 2] = (Math.random() - 0.5) * 2000;
                 
-                positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
-                positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-                positions[i3 + 2] = radius * Math.cos(phi);
-                
-                // Color - use the palette
+                // Color - assign based on field of expertise
                 const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
                 colors[i3] = color.r;
                 colors[i3 + 1] = color.g;
                 colors[i3 + 2] = color.b;
                 
-                // Size - vary particle sizes
+                // Size - vary more
                 sizes[i] = Math.random() * 3 + 0.5;
             }
-            
-            // Set attributes
+
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
             geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-            
-            // Create material with shaders for better control
+
+            // Create particle material with more visible particles
             const material = new THREE.ShaderMaterial({
                 uniforms: {
                     time: { value: 0 },
@@ -988,12 +1082,12 @@
                         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                         
                         // Add some movement based on time
-                        float wave = sin(position.x * 0.5 + time) * cos(position.y * 0.5 + time) * 2.0;
-                        mvPosition.xyz += normalize(position) * wave;
+                        mvPosition.x += sin(time + position.x) * 0.5;
+                        mvPosition.y += cos(time + position.y) * 0.5;
                         
                         // Mouse interaction
-                        vec2 mouseInfluence = mouse * 5.0;
-                        mvPosition.xy += mouseInfluence * (1.0 / -mvPosition.z);
+                        vec2 mouseInfluence = mouse * 0.1;
+                        mvPosition.xy += mouseInfluence * (1.0 / -mvPosition.z) * 50.0;
                         
                         gl_PointSize = size * (300.0 / -mvPosition.z);
                         gl_Position = projectionMatrix * mvPosition;
@@ -1003,10 +1097,11 @@
                     varying vec3 vColor;
                     
                     void main() {
-                        float r = distance(gl_PointCoord, vec2(0.5, 0.5));
-                        if (r > 0.5) discard;
+                        // Create circular points with glow
+                        vec2 coord = gl_PointCoord - vec2(0.5);
+                        if(length(coord) > 0.5) discard;
                         
-                        float alpha = 1.0 - smoothstep(0.0, 0.5, r);
+                        float alpha = 1.0 - smoothstep(0.0, 0.5, length(coord));
                         gl_FragColor = vec4(vColor, alpha * 0.8);
                     }
                 `,
@@ -1014,50 +1109,45 @@
                 vertexColors: true,
                 blending: THREE.AdditiveBlending
             });
-            
-            // Create particle system
+
             particles = new THREE.Points(geometry, material);
             scene.add(particles);
-            
-            // Add ambient light
-            const ambientLight = new THREE.AmbientLight(0x333333);
-            scene.add(ambientLight);
-            
-            // Add directional light
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            directionalLight.position.set(1, 1, 1);
-            scene.add(directionalLight);
-            
+
+            camera.position.z = 100;
+
             // Mouse interaction
             document.addEventListener('mousemove', onMouseMove, false);
-            
+
             // Start animation
             animate();
         }
-        
+
         function onMouseMove(event) {
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
         }
-        
+
         function animate() {
             requestAnimationFrame(animate);
             
-            // Update time uniform
-            particles.material.uniforms.time.value += 0.01;
-            
-            // Update mouse uniform
-            particles.material.uniforms.mouse.value.x = mouseX;
-            particles.material.uniforms.mouse.value.y = mouseY;
-            
-            // Rotate particles slowly
+            // Particle animation
             particles.rotation.x += 0.0005;
             particles.rotation.y += 0.001;
             
-            // Render the scene
+            // Update time uniform for shader animation
+            if (particles.material && particles.material.uniforms.time) {
+                particles.material.uniforms.time.value = performance.now() * 0.001;
+            }
+            
+            // Mouse influence
+            if (particles.material && particles.material.uniforms.mouse) {
+                particles.material.uniforms.mouse.value.x = mouseX;
+                particles.material.uniforms.mouse.value.y = mouseY;
+            }
+            
             renderer.render(scene, camera);
         }
-        
+
         // Enhanced category population with animations
         function populateCategories() {
             const grid = document.getElementById('categoryGrid');
@@ -1092,6 +1182,7 @@
                 grid.appendChild(card);
             });
         }
+
         // Enhanced chat functionality
         let currentExpertType = 'General';
         let currentCategory = null;
@@ -1114,6 +1205,7 @@
                 chatToggle.innerHTML = '💬';
             }
         }
+
         function openCategoryChat(category) {
             currentExpertType = category.title;
             currentCategory = category;
@@ -1131,6 +1223,7 @@
             
             chatHistory = [];
         }
+
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
@@ -1150,6 +1243,7 @@
                 }, 1500 + Math.random() * 1000);
             }
         }
+
         function addMessage(sender, text, isHTML = false) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
@@ -1164,6 +1258,7 @@
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
+
         function showTypingIndicator() {
             isTyping = true;
             const messagesDiv = document.getElementById('chatMessages');
@@ -1181,6 +1276,7 @@
             messagesDiv.appendChild(typingDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
+
         function hideTypingIndicator() {
             isTyping = false;
             const typingIndicator = document.getElementById('typingIndicator');
@@ -1188,6 +1284,7 @@
                 typingIndicator.remove();
             }
         }
+
         function generateAIResponse(userMessage) {
             const responses = categoryResponses[currentExpertType] || [
                 "Based on expert knowledge in this field, here's what I can tell you...",
@@ -1225,11 +1322,13 @@
                 }, 2000);
             }
         }
+
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 sendMessage();
             }
         }
+
         function initiateSearch() {
             const searchInput = document.getElementById('searchInput');
             const query = searchInput.value.trim();
@@ -1244,6 +1343,7 @@
                 searchInput.value = '';
             }
         }
+
         function detectCategory(query) {
             const keywords = {
                 'Legal': ['law', 'legal', 'contract', 'court', 'attorney', 'sue', 'lawyer', 'rights', 'lawsuit'],
@@ -1268,6 +1368,7 @@
             
             return categories[0]; // Default to Legal if no match
         }
+
         function connectToExpert() {
             closeModal('expertModal');
             addMessage('ai', "🔄 Great! I'm connecting you with a verified human expert. Please hold while I find an available specialist in " + currentExpertType + "...");
@@ -1280,12 +1381,14 @@
                 }, 3000);
             }, 3000);
         }
+
         // Enhanced modal functions
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'block';
             modal.style.animation = 'fadeIn 0.3s ease-out';
         }
+
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.animation = 'fadeOut 0.3s ease-out';
@@ -1293,6 +1396,7 @@
                 modal.style.display = 'none';
             }, 300);
         }
+
         // Form handlers
         function handleSignup(event) {
             event.preventDefault();
@@ -1313,6 +1417,7 @@
                 form.reset();
             }, 2000);
         }
+
         function handleLogin(event) {
             event.preventDefault();
             const form = event.target;
@@ -1331,6 +1436,7 @@
                 form.reset();
             }, 1500);
         }
+
         // Smooth scrolling for navigation
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1344,6 +1450,7 @@
                 }
             });
         });
+
         // Window resize handler
         window.addEventListener('resize', () => {
             if (renderer) {
@@ -1352,6 +1459,7 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }
         });
+
         // Initialize everything when page loads
         window.addEventListener('load', () => {
             initThreeJS();
@@ -1368,6 +1476,7 @@
                 hero.style.transform = 'translateY(0)';
             }, 500);
         });
+
         // Close modals when clicking outside
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal');
@@ -1378,6 +1487,7 @@
                 }
             });
         }
+
         // Add CSS animations
         const style = document.createElement('style');
         style.textContent = `
@@ -1391,6 +1501,7 @@
                     opacity: 1;
                 }
             }
+
             @keyframes slideOutDown {
                 from {
                     transform: translateY(0);
@@ -1401,10 +1512,12 @@
                     opacity: 0;
                 }
             }
+
             @keyframes fadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }
             }
+
             @keyframes fadeOut {
                 from { opacity: 1; }
                 to { opacity: 0; }
