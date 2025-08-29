@@ -5,6 +5,8 @@
     width: 100%;
     height: 100%;
     z-index: -1;
+    /* Fallback background in case Three.js doesn't load */
+    background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
 }
 
 .overlay {
@@ -17,3 +19,44 @@
     z-index: 0;
     pointer-events: none;
 }
+
+/* Add animation for particles fallback */
+@keyframes particle-movement {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-100px) translateX(100px); }
+}
+
+/* Fallback particles if Three.js fails */
+.three-fallback {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.fallback-particle {
+    position: absolute;
+    background: rgba(102, 126, 234, 0.5);
+    border-radius: 50%;
+    animation: particle-movement 15s infinite alternate ease-in-out;
+}
+
+.fallback-particle:nth-child(1) {
+    width: 4px;
+    height: 4px;
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+    animation-duration: 20s;
+}
+
+.fallback-particle:nth-child(2) {
+    width: 6px;
+    height: 6px;
+    top: 60%;
+    left: 80%;
+    animation-delay: 2s;
+    animation-duration: 25s;
+}
+
+/* Add more fallback particles as needed */
