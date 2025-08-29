@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AskAExpert - Connect with AI and human experts across various fields">
+    <title>AskAExpert - Your Professional AI Companion</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" as="style" href="css/style.css">
+    <link rel="preload" as="style" href="css/threejs.css">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/threejs.css">
+</head>
+<body>
+    <div id="three-container"></div>
+    <div class="overlay"></div>
+
+    <header>
+        <nav class="container">
+            <div class="logo">AskAExpert</div>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="#" class="cta-button secondary" onclick="openModal('loginModal')">Login</a>
+                <a href="#" class="cta-button primary" onclick="openModal('authModal')">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="container">
+                <h1 class="floating">Expert Knowledge at Your Fingertips</h1>
+                <p>Connect with AI-powered expertise or real human professionals across every field imaginable</p>
+                
+                <div class="search-container">
+                    <input type="text" class="search-box" placeholder="What do you need help with today?" id="searchInput" aria-label="Search for expert help">
+                    <button class="search-btn" onclick="initiateSearch()" aria-label="Search">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21.71 20.29l-5.4-5.4a9 9 0 1 0-1.42 1.42l5.4 5.4a1 1 0 0 0 1.42-1.42zM10 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories" id="categories">
+            <div class="container">
+                <h2 class="section-title">Expert Categories</h2>
+                <div class="category-grid" id="categoryGrid">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <h2 class="section-title">Why Choose AskAExpert?</h2>
+                <div class="features-grid">
+                    <!-- Feature items will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing" id="pricing">
+            <div class="container">
+                <h2 class="section-title">Choose Your Plan</h2>
+                <div class="pricing-grid">
+                    <!-- Pricing cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Chat Interface -->
+    <div class="chat-interface" id="chatInterface" aria-hidden="true">
+        <div class="chat-header">
+            <div>
+                <h3 id="chatTitle">AI Expert Assistant</h3>
+                <div class="chat-status">
+                    <div class="status-dot"></div>
+                    <span>Online</span>
+                </div>
+            </div>
+            <button class="close" onclick="toggleChat()" aria-label="Close chat">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">👋 Hello! I'm your AI expert assistant. What would you like to know about today?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)" aria-label="Type your message">
+            <button class="cta-button primary" onclick="sendMessage()" aria-label="Send message">Send</button>
+        </div>
+    </div>
+
+    <button class="chat-toggle" onclick="toggleChat()" id="chatToggle" aria-label="Open chat">💬</button>
+
+    <!-- Modals -->
+    <div class="modal" id="authModal" aria-hidden="true" role="dialog" aria-labelledby="authModalTitle">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('authModal')" aria-label="Close modal">&times;</button>
+            <h2 id="authModalTitle">Join AskAExpert</h2>
+            <p>Sign up to access our full range of expert services</p>
+            <form style="margin-top: 20px;" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <input type="text" placeholder="Full Name" required aria-label="Full Name">
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email Address" required aria-label="Email Address">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" required aria-label="Password">
+                </div>
+                <button type="submit" class="cta-button primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal" aria-hidden="true" role="dialog" aria-labelledby="loginModalTitle">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('loginModal')" aria-label="Close modal">&times;</button>
+            <h2 id="loginModalTitle">Welcome Back</h2>
+            <p>Login to access your expert consultations</p>
+            <form style="margin-top: 20px;" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <input type="email" placeholder="Email Address" required aria-label="Email Address">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" required aria-label="Password">
+                </div>
+                <button type="submit" class="cta-button primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="expertModal" aria-hidden="true" role="dialog" aria-labelledby="expertModalTitle">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('expertModal')" aria-label="Close modal">&times;</button>
+            <h2 id="expertModalTitle">Connect with Human Expert</h2>
+            <p>Would you like to be connected with a verified human expert for personalized consultation?</p>
+            <div style="margin-top: 30px;">
+                <div class="expert-preview">
+                    <h4>💼 Available Now:</h4>
+                    <p>Dr. Sarah Johnson - Medical Expert (⭐ 4.9/5)</p>
+                    <p>Specializes in general medicine and diagnosis</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="cta-button primary" onclick="connectToExpert()">Connect Now ($25/session)</button>
+                    <button class="cta-button secondary" onclick="closeModal('expertModal')">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <p>Loading AskAExpert...</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/threejs.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
