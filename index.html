@@ -3,179 +3,1366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AskAExpert - Connect with AI and human experts across various fields">
     <title>AskAExpert - Your Professional AI Companion</title>
-    
-    <!-- Preload critical resources -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preload" as="style" href="css/style.css">
-    <link rel="preload" as="style" href="css/threejs.css">
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/threejs.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(10, 10, 10, 0.7) 0%, rgba(10, 10, 10, 0.9) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            padding: 20px 0;
+            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .hero {
+            padding: 180px 0 100px 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out;
+        }
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 40px auto;
+            position: relative;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        .search-box {
+            width: 100%;
+            padding: 20px 60px 20px 20px;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+        }
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+        .categories {
+            padding: 80px 0;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            color: #ffffff;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        .category-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        .category-card:hover::before {
+            left: 100%;
+        }
+        .category-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+        }
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .category-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        .category-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+        .expert-count {
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .features {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+        .feature-item {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .feature-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        .feature-item p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .pricing {
+            padding: 80px 0;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .pricing-card.featured {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+        .pricing-card.featured:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .price-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+        }
+        .features-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        .features-list li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .chat-interface {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 420px;
+            height: 650px;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 20px 20px 0 0;
+        }
+        .chat-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            font-size: 14px;
+        }
+        .chat-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 85%;
+            word-wrap: break-word;
+            animation: messageSlide 0.3s ease-out;
+        }
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            align-self: flex-end;
+            color: white;
+        }
+        .message.ai {
+            background: rgba(255, 255, 255, 0.1);
+            align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .message.typing {
+            background: rgba(255, 255, 255, 0.1);
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        .chat-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.6);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+        }
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+        .close:hover {
+            color: #667eea;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .chat-interface {
+                width: 95%;
+                height: 80%;
+                bottom: 10px;
+                right: 50%;
+                transform: translateX(50%);
+            }
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+        /* Loading states */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div id="three-container"></div>
     <div class="overlay"></div>
-
     <header>
         <nav class="container">
             <div class="logo">AskAExpert</div>
-            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#categories">Categories</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#pricing">Pricing</a></li>
             </ul>
-            <div class="auth-buttons">
-                <a href="#" class="cta-button secondary" onclick="openModal('loginModal')">Login</a>
-                <a href="#" class="cta-button primary" onclick="openModal('authModal')">Get Started</a>
+            <div>
+                <a href="#" class="cta-button" onclick="openModal('loginModal')">Login</a>
+                <a href="#" class="cta-button" onclick="openModal('authModal')" style="margin-left: 10px;">Get Started</a>
             </div>
         </nav>
     </header>
-
-    <main>
-        <section class="hero" id="home">
-            <div class="container">
-                <h1 class="floating">Expert Knowledge at Your Fingertips</h1>
-                <p>Connect with AI-powered expertise or real human professionals across every field imaginable</p>
+    <section class="hero" id="home">
+        <div class="container">
+            <h1 class="floating">Expert Knowledge at Your Fingertips</h1>
+            <p>Connect with AI-powered expertise or real human professionals across every field imaginable</p>
+            
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="What do you need help with today?" id="searchInput">
+                <button class="search-btn" onclick="initiateSearch()">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21.71 20.29l-5.4-5.4a9 9 0 1 0-1.42 1.42l5.4 5.4a1 1 0 0 0 1.42-1.42zM10 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+    <section class="categories" id="categories">
+        <div class="container">
+            <h2 class="section-title">Expert Categories</h2>
+            <div class="category-grid" id="categoryGrid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose AskAExpert?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Expertise</h3>
+                    <p>Get instant, accurate answers powered by advanced AI trained on expert knowledge from every field</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">👥</div>
+                    <h3>Human Expert Network</h3>
+                    <p>Connect with verified professionals when you need personalized human insight and consultation</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3>24/7 Availability</h3>
+                    <p>Expert knowledge available anytime, anywhere, at your convenience - never wait for answers</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Private</h3>
+                    <p>Your conversations and data are protected with enterprise-grade security and encryption</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h3>Smart Analytics</h3>
+                    <p>Track your consultation history and get personalized recommendations for better decisions</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Access</h3>
+                    <p>Access experts from around the world with multi-language support and cultural awareness</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Choose Your Plan</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">$0<span style="font-size: 1rem;">/month</span></div>
+                    <div class="price-subtitle">Perfect for getting started</div>
+                    <ul class="features-list">
+                        <li>5 AI consultations per day</li>
+                        <li>Basic expert categories</li>
+                        <li>Email support</li>
+                        <li>Community forum access</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('authModal')" style="width: 100%;">Get Started Free</button>
+                </div>
                 
-                <div class="search-container">
-                    <input type="text" class="search-box" placeholder="What do you need help with today?" id="searchInput" aria-label="Search for expert help">
-                    <button class="search-btn" onclick="initiateSearch()" aria-label="Search">
-                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M21.71 20.29l-5.4-5.4a9 9 0 1 0-1.42 1.42l5.4 5.4a1 1 0 0 0 1.42-1.42zM10 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
-                        </svg>
-                    </button>
+                <div class="pricing-card featured">
+                    <h3>Professional</h3>
+                    <div class="price">$29<span style="font-size: 1rem;">/month</span></div>
+                    <div class="price-subtitle">Most popular choice</div>
+                    <ul class="features-list">
+                        <li>Unlimited AI consultations</li>
+                        <li>All expert categories</li>
+                        <li>5 human expert sessions</li>
+                        <li>Priority support</li>
+                        <li>Document analysis</li>
+                        <li>Advanced analytics</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('authModal')" style="width: 100%;">Start Pro Trial</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">$99<span style="font-size: 1rem;">/month</span></div>
+                    <div class="price-subtitle">For businesses and teams</div>
+                    <ul class="features-list">
+                        <li>Everything in Professional</li>
+                        <li>Unlimited human experts</li>
+                        <li>Team collaboration tools</li>
+                        <li>Custom integrations</li>
+                        <li>Dedicated account manager</li>
+                        <li>White-label options</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('authModal')" style="width: 100%;">Contact Sales</button>
                 </div>
             </div>
-        </section>
-
-        <section class="categories" id="categories">
-            <div class="container">
-                <h2 class="section-title">Expert Categories</h2>
-                <div class="category-grid" id="categoryGrid">
-                    <!-- Categories will be populated by JavaScript -->
-                </div>
-            </div>
-        </section>
-
-        <section class="features" id="features">
-            <div class="container">
-                <h2 class="section-title">Why Choose AskAExpert?</h2>
-                <div class="features-grid">
-                    <!-- Feature items will be populated by JavaScript -->
-                </div>
-            </div>
-        </section>
-
-        <section class="pricing" id="pricing">
-            <div class="container">
-                <h2 class="section-title">Choose Your Plan</h2>
-                <div class="pricing-grid">
-                    <!-- Pricing cards will be populated by JavaScript -->
-                </div>
-            </div>
-        </section>
-    </main>
-
+        </div>
+    </section>
     <!-- Chat Interface -->
-    <div class="chat-interface" id="chatInterface" aria-hidden="true">
+    <div class="chat-interface" id="chatInterface">
         <div class="chat-header">
             <div>
                 <h3 id="chatTitle">AI Expert Assistant</h3>
                 <div class="chat-status">
                     <div class="status-dot"></div>
-                    <span>Online</span>
+                    <span style="font-size: 12px;">Online</span>
                 </div>
             </div>
-            <button class="close" onclick="toggleChat()" aria-label="Close chat">&times;</button>
+            <span class="close" onclick="toggleChat()">&times;</span>
         </div>
         <div class="chat-messages" id="chatMessages">
             <div class="message ai">👋 Hello! I'm your AI expert assistant. What would you like to know about today?</div>
         </div>
         <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)" aria-label="Type your message">
-            <button class="cta-button primary" onclick="sendMessage()" aria-label="Send message">Send</button>
+            <input type="text" id="messageInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
+            <button class="cta-button" onclick="sendMessage()">Send</button>
         </div>
     </div>
-
-    <button class="chat-toggle" onclick="toggleChat()" id="chatToggle" aria-label="Open chat">💬</button>
-
+    <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">💬</button>
     <!-- Modals -->
-    <div class="modal" id="authModal" aria-hidden="true" role="dialog" aria-labelledby="authModalTitle">
+    <div class="modal" id="authModal">
         <div class="modal-content">
-            <button class="close" onclick="closeModal('authModal')" aria-label="Close modal">&times;</button>
-            <h2 id="authModalTitle">Join AskAExpert</h2>
+            <span class="close" onclick="closeModal('authModal')">&times;</span>
+            <h2>Join AskAExpert</h2>
             <p>Sign up to access our full range of expert services</p>
             <form style="margin-top: 20px;" onsubmit="handleSignup(event)">
                 <div class="form-group">
-                    <input type="text" placeholder="Full Name" required aria-label="Full Name">
+                    <input type="text" placeholder="Full Name" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" placeholder="Email Address" required aria-label="Email Address">
+                    <input type="email" placeholder="Email Address" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Password" required aria-label="Password">
+                    <input type="password" placeholder="Password" required>
                 </div>
-                <button type="submit" class="cta-button primary" style="width: 100%;">Create Account</button>
+                <button type="submit" class="cta-button" style="width: 100%;">Create Account</button>
             </form>
         </div>
     </div>
-
-    <div class="modal" id="loginModal" aria-hidden="true" role="dialog" aria-labelledby="loginModalTitle">
+    <div class="modal" id="loginModal">
         <div class="modal-content">
-            <button class="close" onclick="closeModal('loginModal')" aria-label="Close modal">&times;</button>
-            <h2 id="loginModalTitle">Welcome Back</h2>
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Welcome Back</h2>
             <p>Login to access your expert consultations</p>
             <form style="margin-top: 20px;" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <input type="email" placeholder="Email Address" required aria-label="Email Address">
+                    <input type="email" placeholder="Email Address" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Password" required aria-label="Password">
+                    <input type="password" placeholder="Password" required>
                 </div>
-                <button type="submit" class="cta-button primary" style="width: 100%;">Login</button>
+                <button type="submit" class="cta-button" style="width: 100%;">Login</button>
             </form>
         </div>
     </div>
-
-    <div class="modal" id="expertModal" aria-hidden="true" role="dialog" aria-labelledby="expertModalTitle">
+    <div class="modal" id="expertModal">
         <div class="modal-content">
-            <button class="close" onclick="closeModal('expertModal')" aria-label="Close modal">&times;</button>
-            <h2 id="expertModalTitle">Connect with Human Expert</h2>
+            <span class="close" onclick="closeModal('expertModal')">&times;</span>
+            <h2>Connect with Human Expert</h2>
             <p>Would you like to be connected with a verified human expert for personalized consultation?</p>
             <div style="margin-top: 30px;">
-                <div class="expert-preview">
-                    <h4>💼 Available Now:</h4>
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px;">💼 Available Now:</h4>
                     <p>Dr. Sarah Johnson - Medical Expert (⭐ 4.9/5)</p>
-                    <p>Specializes in general medicine and diagnosis</p>
+                    <p style="font-size: 14px; color: rgba(255,255,255,0.7);">Specializes in general medicine and diagnosis</p>
                 </div>
-                <div class="modal-actions">
-                    <button class="cta-button primary" onclick="connectToExpert()">Connect Now ($25/session)</button>
-                    <button class="cta-button secondary" onclick="closeModal('expertModal')">Maybe Later</button>
-                </div>
+                <button class="cta-button" style="margin-right: 10px;" onclick="connectToExpert()">Connect Now ($25/session)</button>
+                <button class="cta-button" style="background: rgba(255,255,255,0.2);" onclick="closeModal('expertModal')">Maybe Later</button>
             </div>
         </div>
     </div>
-
-    <!-- Loading indicator -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-spinner"></div>
-        <p>Loading AskAExpert...</p>
-    </div>
-
-    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/threejs.js"></script>
-    <script src="js/chat.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        // Expert categories data with enhanced information
+        const categories = [
+            { 
+                icon: '⚖️', 
+                title: 'Legal', 
+                description: 'Legal advice, contracts, litigation, and consultation', 
+                experts: '2,847',
+                specialties: ['Contract Law', 'Personal Injury', 'Criminal Defense', 'Corporate Law']
+            },
+            { 
+                icon: '🏥', 
+                title: 'Medical', 
+                description: 'Health advice, diagnosis, treatment, and wellness', 
+                experts: '3,421',
+                specialties: ['General Medicine', 'Cardiology', 'Dermatology', 'Mental Health']
+            },
+            { 
+                icon: '💰', 
+                title: 'Finance', 
+                description: 'Investment, taxes, financial planning, and wealth management', 
+                experts: '1,956',
+                specialties: ['Investment Planning', 'Tax Advisory', 'Retirement Planning', 'Insurance']
+            },
+            { 
+                icon: '🏠', 
+                title: 'Real Estate', 
+                description: 'Property advice, market insights, and investment guidance', 
+                experts: '1,234',
+                specialties: ['Residential Sales', 'Commercial Real Estate', 'Property Management', 'Investment']
+            },
+            { 
+                icon: '💻', 
+                title: 'Technology', 
+                description: 'IT support, development, cybersecurity, and tech consulting', 
+                experts: '4,567',
+                specialties: ['Software Development', 'Cybersecurity', 'Cloud Computing', 'AI/ML']
+            },
+            { 
+                icon: '🎨', 
+                title: 'Design', 
+                description: 'Creative design, branding, UI/UX, and artistic consultation', 
+                experts: '892',
+                specialties: ['Graphic Design', 'UI/UX Design', 'Brand Strategy', 'Web Design']
+            },
+            { 
+                icon: '🏢', 
+                title: 'Business', 
+                description: 'Strategy, marketing, entrepreneurship, and management', 
+                experts: '2,145',
+                specialties: ['Business Strategy', 'Marketing', 'Operations', 'Leadership']
+            },
+            { 
+                icon: '🎓', 
+                title: 'Education', 
+                description: 'Academic support, career guidance, and learning strategies', 
+                experts: '1,678',
+                specialties: ['Academic Tutoring', 'Career Counseling', 'Test Prep', 'Skills Training']
+            },
+            { 
+                icon: '🔧', 
+                title: 'Engineering', 
+                description: 'Technical solutions, project consulting, and innovation', 
+                experts: '987',
+                specialties: ['Civil Engineering', 'Mechanical Engineering', 'Software Engineering', 'Electrical']
+            },
+            { 
+                icon: '🌱', 
+                title: 'Environment', 
+                description: 'Sustainability, environmental consulting, and green solutions', 
+                experts: '543',
+                specialties: ['Sustainability', 'Environmental Law', 'Green Technology', 'Climate Change']
+            },
+            { 
+                icon: '💊', 
+                title: 'Pharmacy', 
+                description: 'Medication advice, drug interactions, and pharmaceutical guidance', 
+                experts: '756',
+                specialties: ['Clinical Pharmacy', 'Drug Information', 'Pharmacovigilance', 'Compounding']
+            },
+            { 
+                icon: '🚗', 
+                title: 'Automotive', 
+                description: 'Car maintenance, automotive expertise, and vehicle consultation', 
+                experts: '1,089',
+                specialties: ['Auto Repair', 'Vehicle Inspection', 'Performance Tuning', 'Classic Cars']
+            }
+        ];
+        // Enhanced AI responses based on categories
+        const categoryResponses = {
+            'Legal': [
+                "Based on legal precedent and current regulations, here's what you need to know...",
+                "From a legal perspective, this situation requires careful consideration of...",
+                "According to current legal standards and best practices...",
+                "This is a common legal question. Let me break down the key points..."
+            ],
+            'Medical': [
+                "From a medical standpoint, these symptoms could indicate...",
+                "Based on current medical literature and guidelines...",
+                "This is an important health concern. Here's what the medical community recommends...",
+                "Medical experts generally agree that in cases like this..."
+            ],
+            'Finance': [
+                "From a financial planning perspective, here's what I recommend...",
+                "Based on current market conditions and financial best practices...",
+                "This is a smart financial question. Here's how experts typically approach it...",
+                "According to financial advisors and market analysis..."
+            ],
+            'Technology': [
+                "From a technical perspective, the best approach would be...",
+                "Based on current technology trends and best practices...",
+                "This is a common tech challenge. Here's the recommended solution...",
+                "According to industry standards and technical documentation..."
+            ]
+        };
+        // Three.js Enhanced Background with Interactive Elements
+        let scene, camera, renderer, particles, mouseX = 0, mouseY = 0;
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+            // Create enhanced particle system
+            const geometry = new THREE.BufferGeometry();
+            const particlesCount = 3000;
+            const positions = new Float32Array(particlesCount * 3);
+            const colors = new Float32Array(particlesCount * 3);
+            const sizes = new Float32Array(particlesCount);
+            const colorPalette = [
+                new THREE.Color(0x667eea),
+                new THREE.Color(0x764ba2),
+                new THREE.Color(0xffffff),
+                new THREE.Color(0x00d4ff)
+            ];
+            for (let i = 0; i < particlesCount; i++) {
+                const i3 = i * 3;
+                
+                // Position
+                positions[i3] = (Math.random() - 0.5) * 200;
+                positions[i3 + 1] = (Math.random() - 0.5) * 200;
+                positions[i3 + 2] = (Math.random() - 0.5) * 200;
+                
+                // Color
+                const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+                
+                // Size
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 1.0 },
+                    mouse: { value: new THREE.Vector2() }
+                },
+                vertexShader: `
+                    attribute float size;
+                    attribute vec3 color;
+                    varying vec3 vColor;
+                    uniform float time;
+                    uniform vec2 mouse;
+                    
+                    void main() {
+                        vColor = color;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        
+                        // Mouse interaction
+                        vec2 mouseInfluence = mouse * 0.1;
+                        mvPosition.xy += mouseInfluence * (1.0 / -mvPosition.z) * 30.0;
+                        
+                        gl_PointSize = size * (300.0 / -mvPosition.z);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor;
+                    
+                    void main() {
+                        float r = length(gl_PointCoord - vec2(0.5, 0.5));
+                        if (r > 0.5) discard;
+                        
+                        float alpha = 1.0 - smoothstep(0.0, 0.5, r);
+                        gl_FragColor = vec4(vColor, alpha * 0.8);
+                    }
+                `,
+                transparent: true,
+                vertexColors: true
+            });
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+            camera.position.z = 50;
+            // Mouse interaction
+            document.addEventListener('mousemove', onMouseMove, false);
+            animate();
+        }
+        function onMouseMove(event) {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Particle animation
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.001;
+            
+            // Mouse influence
+            particles.material.uniforms.mouse.value.x = mouseX;
+            particles.material.uniforms.mouse.value.y = mouseY;
+            particles.material.uniforms.time.value = Date.now() * 0.001;
+            
+            renderer.render(scene, camera);
+        }
+        // Enhanced category population with animations
+        function populateCategories() {
+            const grid = document.getElementById('categoryGrid');
+            categories.forEach((category, index) => {
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.onclick = () => openCategoryChat(category);
+                
+                card.innerHTML = `
+                    <span class="category-icon">${category.icon}</span>
+                    <h3>${category.title}</h3>
+                    <p>${category.description}</p>
+                    <div style="margin-top: 15px;">
+                        <span class="expert-count">${category.experts} experts available</span>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 5px;">
+                            ${category.specialties.slice(0, 2).join(' • ')}
+                        </div>
+                    </div>
+                `;
+                
+                // Add entrance animation
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+                
+                grid.appendChild(card);
+            });
+        }
+        // Enhanced chat functionality
+        let currentExpertType = 'General';
+        let currentCategory = null;
+        let chatHistory = [];
+        let isTyping = false;
+        
+        function toggleChat() {
+            const chatInterface = document.getElementById('chatInterface');
+            const chatToggle = document.getElementById('chatToggle');
+            
+            if (chatInterface.style.display === 'none' || chatInterface.style.display === '') {
+                chatInterface.style.display = 'flex';
+                chatInterface.style.animation = 'slideInUp 0.3s ease-out';
+                chatToggle.innerHTML = '✕';
+            } else {
+                chatInterface.style.animation = 'slideOutDown 0.3s ease-out';
+                setTimeout(() => {
+                    chatInterface.style.display = 'none';
+                }, 300);
+                chatToggle.innerHTML = '💬';
+            }
+        }
+        function openCategoryChat(category) {
+            currentExpertType = category.title;
+            currentCategory = category;
+            document.getElementById('chatTitle').textContent = `${category.title} Expert AI`;
+            toggleChat();
+            
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.innerHTML = `
+                <div class="message ai">
+                    Hello! I'm your ${category.title} expert AI assistant. I specialize in:
+                    <br><br>• ${category.specialties.join('<br>• ')}
+                    <br><br>How can I help you with ${category.title.toLowerCase()}-related questions today?
+                </div>
+            `;
+            
+            chatHistory = [];
+        }
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message && !isTyping) {
+                addMessage('user', message);
+                chatHistory.push({ role: 'user', content: message });
+                input.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Simulate AI response delay
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    generateAIResponse(message);
+                }, 1500 + Math.random() * 1000);
+            }
+        }
+        function addMessage(sender, text, isHTML = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            if (isHTML) {
+                messageDiv.innerHTML = text;
+            } else {
+                messageDiv.textContent = text;
+            }
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        function showTypingIndicator() {
+            isTyping = true;
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message typing';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                AI is typing
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        function hideTypingIndicator() {
+            isTyping = false;
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        function generateAIResponse(userMessage) {
+            const responses = categoryResponses[currentExpertType] || [
+                "Based on expert knowledge in this field, here's what I can tell you...",
+                "That's an excellent question! Let me provide you with detailed insights...",
+                "From professional experience in this area, I recommend...",
+                "This is a common concern. Here's the expert perspective..."
+            ];
+            
+            const baseResponse = responses[Math.floor(Math.random() * responses.length)];
+            let response = baseResponse;
+            
+            // Add context-aware responses
+            if (userMessage.toLowerCase().includes('cost') || userMessage.toLowerCase().includes('price')) {
+                response += " Regarding costs, this can vary significantly based on several factors...";
+            } else if (userMessage.toLowerCase().includes('time') || userMessage.toLowerCase().includes('how long')) {
+                response += " The timeline for this typically depends on complexity and specific requirements...";
+            } else if (userMessage.toLowerCase().includes('legal') || userMessage.toLowerCase().includes('law')) {
+                response += " From a legal standpoint, it's important to consider compliance and regulatory requirements...";
+            }
+            
+            addMessage('ai', response);
+            chatHistory.push({ role: 'ai', content: response });
+            
+            // Randomly suggest human expert (30% chance)
+            if (Math.random() > 0.7) {
+                setTimeout(() => {
+                    const expertSuggestion = `
+                        Would you like me to connect you with a verified human expert for more personalized advice? 
+                        <br><br>
+                        <button class="cta-button" onclick="openModal('expertModal')" style="margin-top: 10px;">
+                            Connect to Human Expert
+                        </button>
+                    `;
+                    addMessage('ai', expertSuggestion, true);
+                }, 2000);
+            }
+        }
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        function initiateSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (query) {
+                // Smart category detection
+                let detectedCategory = detectCategory(query);
+                
+                openCategoryChat(detectedCategory);
+                addMessage('user', query);
+                setTimeout(() => generateAIResponse(query), 1000);
+                searchInput.value = '';
+            }
+        }
+        function detectCategory(query) {
+            const keywords = {
+                'Legal': ['law', 'legal', 'contract', 'court', 'attorney', 'sue', 'lawyer', 'rights', 'lawsuit'],
+                'Medical': ['health', 'doctor', 'medical', 'symptom', 'disease', 'treatment', 'pain', 'medicine', 'sick'],
+                'Finance': ['money', 'investment', 'tax', 'finance', 'budget', 'loan', 'bank', 'credit', 'debt'],
+                'Technology': ['tech', 'computer', 'software', 'programming', 'IT', 'website', 'app', 'digital', 'code'],
+                'Real Estate': ['house', 'property', 'real estate', 'mortgage', 'rent', 'buy', 'sell', 'home'],
+                'Business': ['business', 'marketing', 'startup', 'company', 'strategy', 'sales', 'entrepreneur'],
+                'Design': ['design', 'creative', 'art', 'logo', 'brand', 'visual', 'graphics', 'ui', 'ux'],
+                'Education': ['education', 'learn', 'study', 'school', 'course', 'degree', 'career', 'job'],
+                'Engineering': ['engineering', 'technical', 'build', 'structure', 'system', 'mechanical', 'civil'],
+                'Automotive': ['car', 'auto', 'vehicle', 'repair', 'engine', 'driving', 'mechanic']
+            };
+            
+            const lowerQuery = query.toLowerCase();
+            
+            for (const [category, words] of Object.entries(keywords)) {
+                if (words.some(word => lowerQuery.includes(word))) {
+                    return categories.find(cat => cat.title === category) || categories[0];
+                }
+            }
+            
+            return categories[0]; // Default to Legal if no match
+        }
+        function connectToExpert() {
+            closeModal('expertModal');
+            addMessage('ai', "🔄 Great! I'm connecting you with a verified human expert. Please hold while I find an available specialist in " + currentExpertType + "...");
+            
+            setTimeout(() => {
+                addMessage('ai', "✅ <strong>Connected!</strong> Dr. Sarah Johnson (Human Expert) has joined the conversation. She'll be with you shortly to provide personalized consultation.");
+                
+                setTimeout(() => {
+                    addMessage('ai', "👩‍⚕️ <strong>Dr. Sarah Johnson:</strong> Hello! I'm a verified " + currentExpertType.toLowerCase() + " expert. I've reviewed your previous questions. How can I provide more detailed, personalized assistance?");
+                }, 3000);
+            }, 3000);
+        }
+        // Enhanced modal functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+            modal.style.animation = 'fadeIn 0.3s ease-out';
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        // Form handlers
+        function handleSignup(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Simulate signup process
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<div class="loading"></div> Creating Account...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                closeModal('authModal');
+                alert('🎉 Account created successfully! Welcome to AskAExpert!');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                form.reset();
+            }, 2000);
+        }
+        function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+            
+            // Simulate login process
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<div class="loading"></div> Signing In...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                closeModal('loginModal');
+                alert('✅ Welcome back! You are now logged in.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                form.reset();
+            }, 1500);
+        }
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            if (renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            initThreeJS();
+            populateCategories();
+            
+            // Add some entrance animations
+            const hero = document.querySelector('.hero');
+            hero.style.opacity = '0';
+            hero.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                hero.style.transition = 'all 1s ease-out';
+                hero.style.opacity = '1';
+                hero.style.transform = 'translateY(0)';
+            }, 500);
+        });
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    const modalId = modal.id;
+                    closeModal(modalId);
+                }
+            });
+        }
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInUp {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutDown {
+                from {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
